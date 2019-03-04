@@ -2,8 +2,8 @@
     "files.associations": {
         "libpq-fe.h": "c",
         "stdio.h": "c",
-        "pg_tools_connection.h": "c",
-        "pg_tools_config.h": "c",
+        "pg_connection.h": "c",
+        "pg_config.h": "c",
         "idle_in_transaction_timeout.h": "c",
         "libconfig.h": "c"
     },

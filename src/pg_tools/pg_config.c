@@ -1,23 +1,25 @@
 /*-------------------------------------------------------------------------
  *
- * pg_tools_config.c
+ * pg_config.c
  *		Read configurations from file.
  *
  *
  * IDENTIFICATION
- *		pg_tools_config/pg_tools_config.c
+ *		pg_tools/pg_config.c
  *
  *-------------------------------------------------------------------------
  */
 
 #include <stdlib.h>
-#include "pg_tools_config.h"
+#include <string.h>
+#include "pg_config.h"
 
 static config_t cfg;
 
-void pg_tools_config_read(const char *path, pg_tools_config_t *conf) {
+pg_config_t *pg_config_read(const char *path) {
     config_t cfg;
     config_setting_t *setting;
+    pg_config_t *conf = (pg_config_t *)malloc(sizeof(pg_config_t));
 
     config_init(&cfg);
 
@@ -45,6 +47,14 @@ void pg_tools_config_read(const char *path, pg_tools_config_t *conf) {
         config_destroy(&cfg);
         exit(EXIT_FAILURE);
     }
+
+    if (!config_lookup_string(&cfg, "log", &conf->log_path)) {
+        fprintf(stderr, "No 'log' setting in configuration file.\n");
+        config_destroy(&cfg);
+        exit(EXIT_FAILURE);
+    }
+
+    return conf;
 }
 
-void pg_tools_config_destroy() { config_destroy(&cfg); }
+void pg_config_destroy() { config_destroy(&cfg); }

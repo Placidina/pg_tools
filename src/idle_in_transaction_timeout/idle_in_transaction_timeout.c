@@ -30,6 +30,7 @@ idle_in_transaction_timeout_retrieve(PGconn *conn, PGresult *res) {
 
     int rows = PQntuples(res);
     int fields = PQnfields(res);
+    printf("%d\n", rows);
 
     idle_in_transaction_timeout_t **idle =
         (idle_in_transaction_timeout_t **)malloc(
