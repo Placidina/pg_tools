@@ -4,7 +4,7 @@
 #
 
 PROJECT=pg_tools
-BUILD=RELEASE
+BUILD=DEBUG
 VERSION=v1.0.0-alpha1
 DISTDIR=dist
 OBJDIR=obj
