@@ -14,44 +14,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include "idle_in_transaction_timeout.h"
+#include "pg_log.h"
 
-idle_in_transaction_timeout_t **
-idle_in_transaction_timeout_retrieve(PGconn *conn, PGresult *res) {
-    res = PQexec(conn, "SELECT datname, application_name, xact_start, "
+int idle_in_transaction_timeout_kill(PGconn *conn, PGresult *res) {
+    res = PQexec(conn, "SELECT pid, datname, application_name, xact_start, "
                        "state_change, query FROM pg_stat_activity WHERE state "
-                       "= 'idle in transaction' ORDER BY xact_start;");
+                       "= 'idle in transaction' ORDER BY xact_start LIMIT 1;");
 
-    if (PQresultStatus(res) == PGRES_FATAL_ERROR) {
+    switch (PQresultStatus(res)) {
+    case PGRES_FATAL_ERROR:
         fprintf(stderr, "%s\n", PQerrorMessage(conn));
         PQfinish(conn);
         PQclear(res);
         exit(1);
-    }
-
-    int rows = PQntuples(res);
-    int fields = PQnfields(res);
-    printf("%d\n", rows);
-
-    idle_in_transaction_timeout_t **idle =
-        (idle_in_transaction_timeout_t **)malloc(
-            sizeof(idle_in_transaction_timeout_t) * rows);
-
-    for (int r = 0; r < rows; r++) {
-        char *values[fields];
-        for (int f = 0; f < fields; f++) {
-            values[f] = PQgetvalue(res, r, f);
+        break;
+    case PGRES_TUPLES_OK: {
+        int rows = PQntuples(res);
+        if (rows > 0) {
+            pg_log(PG_LOG_INFO, "Killed: %s | %s | %s | %s | %s | %s\n",
+                   PQgetvalue(res, 0, 0), PQgetvalue(res, 0, 1),
+                   PQgetvalue(res, 0, 2), PQgetvalue(res, 0, 3),
+                   PQgetvalue(res, 0, 4), PQgetvalue(res, 0, 5));
         }
 
-        idle[r] = (idle_in_transaction_timeout_t *)malloc(
-            sizeof(idle_in_transaction_timeout_t));
-
-        idle[r]->datname = values[0];
-        idle[r]->application_name = values[1];
-        idle[r]->xact_start = values[2];
-        idle[r]->state_change = values[3];
-        idle[r]->query = values[4];
+        PQclear(res);
+        return rows;
     }
-
-    PQclear(res);
-    return idle;
+    default:
+        PQclear(res);
+        return 0;
+    }
 }

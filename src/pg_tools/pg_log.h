@@ -1,5 +1,5 @@
-#ifndef PG_LOG
-#define PG_LOG
+#ifndef _PG_LOG
+#define _PG_LOG
 
 #define LOG_BUFFER 4096
 

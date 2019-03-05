@@ -30,7 +30,8 @@ void pg_log_initialize(const char *path) {
     pg_log_t.fp = fopen(path, "a+");
     if (pg_log_t.fp == NULL) {
         fprintf(stderr,
-                "%d/%d/%d %d:%d:%d error: Could not open log file \"%s\"",
+                "%04d/%02d/%02d %02d:%02d:%02d error: Could not open log file "
+                "\"%s\"",
                 tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
                 tm.tm_min, tm.tm_sec, path);
         exit(EXIT_FAILURE);
@@ -43,9 +44,10 @@ void pg_log_reload() {
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
 
-    if (!fclose(pg_log_t.fp)) {
+    if (fclose(pg_log_t.fp)) {
         fprintf(stderr,
-                "%d/%d/%d %d:%d:%d error: Could not close log file \"%s\"",
+                "%04d/%02d/%02d %02d:%02d:%02d error: Could not close log file "
+                "\"%s\"",
                 tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
                 tm.tm_min, tm.tm_sec, pg_log_t.path);
         exit(EXIT_FAILURE);
@@ -63,7 +65,8 @@ void pg_log(int level, const char *message, ...) {
 
 #ifndef DEBUG
     if (pg_log_t.fp == NULL) {
-        fprintf(stderr, "%d/%d/%d %d:%d:%d error: Uninitialized log file",
+        fprintf(stderr,
+                "%04d/%02d/%02d %02d:%02d:%02d error: Uninitialized log file",
                 tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
                 tm.tm_min, tm.tm_sec);
         exit(EXIT_FAILURE);
@@ -78,35 +81,35 @@ void pg_log(int level, const char *message, ...) {
 
     if (level == PG_LOG_ERROR) {
 #ifdef DEBUG
-        fprintf(stderr, "%d/%d/%d %d:%d:%d error: %s", tm.tm_year + 1900,
-                tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,
-                buffer);
+        fprintf(stderr, "%04d/%02d/%02d %02d:%02d:%02d error: %s",
+                tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
+                tm.tm_min, tm.tm_sec, buffer);
 #else
-        fprintf(pg_log_t.fp, "%d/%d/%d %d:%d:%d error: %s", tm.tm_year + 1900,
-                tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,
-                buffer);
+        fprintf(pg_log_t.fp, "%04d/%02d/%02d %02d:%02d:%02d error: %s",
+                tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
+                tm.tm_min, tm.tm_sec, buffer);
         fflush(pg_log_t.fp);
 #endif
     } else if (level == PG_LOG_WARNING) {
 #ifdef DEBUG
-        fprintf(stdout, "%d/%d/%d %d:%d:%d warning: %s", tm.tm_year + 1900,
-                tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,
-                buffer);
+        fprintf(stdout, "%04d/%02d/%02d %02d:%02d:%02d warning: %s",
+                tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
+                tm.tm_min, tm.tm_sec, buffer);
 #else
-        fprintf(pg_log_t.fp, "%d/%d/%d %d:%d:%d warning: %s", tm.tm_year + 1900,
-                tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,
-                buffer);
+        fprintf(pg_log_t.fp, "%04d/%02d/%02d %02d:%02d:%02d warning: %s",
+                tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
+                tm.tm_min, tm.tm_sec, buffer);
         fflush(pg_log_t.fp);
 #endif
     } else {
 #ifdef DEBUG
-        fprintf(stdout, "%d/%d/%d %d:%d:%d %s", tm.tm_year + 1900,
+        fprintf(stdout, "%04d/%02d/%02d %02d:%02d:%02d %s", tm.tm_year + 1900,
                 tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,
                 buffer);
 #else
-        fprintf(pg_log_t.fp, "%d/%d/%d %d:%d:%d %s", tm.tm_year + 1900,
-                tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,
-                buffer);
+        fprintf(pg_log_t.fp, "%04d/%02d/%02d %02d:%02d:%02d %s",
+                tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
+                tm.tm_min, tm.tm_sec, buffer);
         fflush(pg_log_t.fp);
 #endif
     }

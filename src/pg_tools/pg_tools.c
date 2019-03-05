@@ -56,14 +56,10 @@ int main(int argc, char *argv[]) {
 
     pg_banner();
 
-    idle_in_transaction_timeout_t **idles =
-        idle_in_transaction_timeout_retrieve(pg->conn, pg->res);
-
-    int len = sizeof(idles) / sizeof(idle_in_transaction_timeout_t);
-    for (int i = 0; i < len; i++) {
-        pg_log(PG_LOG_INFO, "%s | %s | %s | %s | %s\n", idles[i]->datname,
-               idles[i]->application_name, idles[i]->xact_start,
-               idles[i]->state_change, idles[i]->query);
+    while (1) {
+        if (!idle_in_transaction_timeout_kill(pg->conn, pg->res)) {
+            sleep(1);
+        }
     }
 
     PQfinish(pg->conn);

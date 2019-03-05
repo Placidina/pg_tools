@@ -1,0 +1,19 @@
+[Unit]
+Description=PG Tools - Simple PostgreSQL Tuning
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=10
+ExecStart=/usr/bin/pg_tools
+PermissionsStartOnly=true
+ExecStartPre=-/bin/mkdir -p /var/run/pg_tools
+PIDFile=/var/run/pg_tools/pg_tools.pid
+ExecStartPost=/bin/sh -c 'umask 022; pgrep pg_tools > /var/run/pg_tools/pg_tools.pid'
+PIDFile=/var/run/pproxy/pg_tools.pid
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=pg_tools
+
+[Install]
+WantedBy=multi-user.target
