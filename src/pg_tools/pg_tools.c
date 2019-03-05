@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
             conf_path = optarg;
             break;
         default:
-            fprintf(stderr, "Usage:\n\t-c\tConfiguration file.\n\n");
+            fprintf(stderr, "Usage:\n\t-c\tConfiguration file.\n\t\t\tDefault: %s\n\n", conf_path);
             exit(EXIT_FAILURE);
         }
     }
