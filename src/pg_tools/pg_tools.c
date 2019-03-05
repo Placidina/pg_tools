@@ -27,17 +27,20 @@ static const char *conf_path = "/etc/pg_tools/pg_tools.conf";
 
 static void pg_banner();
 static void pg_graceful_shutdown();
+static void pg_args_help(FILE *fp, int exit_code);
 
 int main(int argc, char *argv[]) {
     int opt;
-    while ((opt = getopt(argc, argv, "c:")) != -1) {
+    while ((opt = getopt(argc, argv, "c:h")) != -1) {
         switch (opt) {
         case 'c':
             conf_path = optarg;
             break;
+        case 'h':
+            pg_args_help(stdout, EXIT_FAILURE);
+            break;
         default:
-            fprintf(stderr, "Usage:\n\t-c\tConfiguration file.\n\t\t\tDefault: %s\n\n", conf_path);
-            exit(EXIT_FAILURE);
+            pg_args_help(stderr, EXIT_FAILURE);
         }
     }
 
@@ -90,4 +93,18 @@ static void pg_graceful_shutdown() {
 #endif
 
     exit(EXIT_SUCCESS);
+}
+
+static void pg_args_help(FILE *fp, int exit_code) {
+    char arg_help[32], arg_config[32];
+
+    sprintf(arg_help, "-h\tShow this.");
+    sprintf(arg_config, "-c\tConfiguration file.\n\t\t\tDefault: %s",
+            conf_path);
+
+    fprintf(fp,
+            "PG Tools %s\n\nUsage:\n\t%s\n\t%s\n\nReport bug: "
+            "<alanplacidina@gmail.com>\n",
+            STR(version), arg_help, arg_config);
+    exit(exit_code);
 }
