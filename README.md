@@ -13,8 +13,27 @@ Simple tool to solve the problem of `idle in transactions` from PostgreSQL 9.4
 ```
 git clone https://github.com/Placidina/pg_tools.git
 cd pg_tools
-make
-sudo make install
+make BUILD=RELEASE
+make install
+```
+
+* Uninstall
+
+```
+make uninstall
+```
+
+## Daemon
+
+* `systemd`
+```
+systemctl enable pg_tools.service
+systemctl start pg_tools.service
+```
+
+* `init.d`
+```
+/etc/init.d/pg_tools start
 ```
 
 ## Arguments

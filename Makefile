@@ -5,7 +5,7 @@
 
 PROJECT=pg_tools
 BUILD=DEBUG
-VERSION=v1.0.0-alpha1
+VERSION=v1.0.0
 DISTDIR=dist
 OBJDIR=obj
 CC=gcc

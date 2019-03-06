@@ -4,12 +4,12 @@
 #include <libconfig.h>
 
 typedef struct pg_config_t {
-    const char *host;
-    const char *username;
-    const char *password;
     const char *log_path;
+    const char *database_host;
+    const char *database_username;
+    const char *database_password;
     int idle_in_transaction_timeout;
-    int idle_in_transaction_timeout_daemon;
+    int idle_in_transaction_daemon;
 } pg_config_t;
 
 /*

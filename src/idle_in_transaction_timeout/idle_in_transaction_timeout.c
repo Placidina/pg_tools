@@ -44,7 +44,6 @@ int idle_in_transaction_timeout_kill(PGconn *conn, PGresult *res, int timeout) {
 
             PQclear(res);
             sprintf(query, "select pg_terminate_backend(%d);", pid);
-            printf("%s\n", query);
             res = PQexec(conn, query);
 
             ExecStatusType status = PQresultStatus(res);

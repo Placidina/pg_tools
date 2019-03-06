@@ -51,7 +51,8 @@ int main(int argc, char *argv[]) {
     signal(SIGUSR1, pg_log_reload);
 #endif
 
-    pg = pg_open_connection(conf->host, conf->username, conf->password);
+    pg = pg_open_connection(conf->database_host, conf->database_username,
+                            conf->database_password);
     signal(SIGHUP, pg_graceful_shutdown);
 
     pg_banner();
@@ -59,15 +60,15 @@ int main(int argc, char *argv[]) {
     while (1) {
         if (!idle_in_transaction_timeout_kill(
                 pg->conn, pg->res, conf->idle_in_transaction_timeout)) {
-            sleep(conf->idle_in_transaction_timeout_daemon);
+            sleep(conf->idle_in_transaction_daemon);
         }
 
-        int idle_in_transaction_timeout_daemon_next =
+        int idle_in_transaction_daemon_next =
             conf->idle_in_transaction_timeout + 1;
 
-        if (conf->idle_in_transaction_timeout_daemon >
-            idle_in_transaction_timeout_daemon_next) {
-            sleep(idle_in_transaction_timeout_daemon_next);
+        if (conf->idle_in_transaction_daemon >
+            idle_in_transaction_daemon_next) {
+            sleep(idle_in_transaction_daemon_next);
         }
     }
 

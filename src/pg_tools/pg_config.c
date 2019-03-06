@@ -30,41 +30,49 @@ pg_config_t *pg_config_read(const char *path) {
         exit(EXIT_FAILURE);
     }
 
-    if (!config_lookup_string(&cfg, "host", &conf->host)) {
-        fprintf(stderr, "No 'host' setting in configuration file.\n");
-        config_destroy(&cfg);
-        exit(EXIT_FAILURE);
-    }
-
-    if (!config_lookup_string(&cfg, "username", &conf->username)) {
-        fprintf(stderr, "No 'username' setting in configuration file.\n");
-        config_destroy(&cfg);
-        exit(EXIT_FAILURE);
-    }
-
-    if (!config_lookup_string(&cfg, "password", &conf->password)) {
-        fprintf(stderr, "No 'password' setting in configuration file.\n");
-        config_destroy(&cfg);
-        exit(EXIT_FAILURE);
-    }
-
     if (!config_lookup_string(&cfg, "log", &conf->log_path)) {
-        fprintf(stderr, "No 'log' setting in configuration file.\n");
+        fprintf(stderr,
+                "Unable to retrieve log path from configuration file.\n");
         config_destroy(&cfg);
         exit(EXIT_FAILURE);
     }
 
-    if (!config_lookup_int(&cfg, "idle_in_transaction_timeout",
+    if (!config_lookup_string(&cfg, "database.host", &conf->database_host)) {
+        fprintf(stderr,
+                "Unable to retrieve database host from configuration file.\n");
+        config_destroy(&cfg);
+        exit(EXIT_FAILURE);
+    }
+
+    if (!config_lookup_string(&cfg, "database.username",
+                              &conf->database_username)) {
+        fprintf(
+            stderr,
+            "Unable to retrieve database username from configuration file.\n");
+        config_destroy(&cfg);
+        exit(EXIT_FAILURE);
+    }
+
+    if (!config_lookup_string(&cfg, "database.password",
+                              &conf->database_password)) {
+        fprintf(
+            stderr,
+            "Unable to retrieve database password from configuration file.\n");
+        config_destroy(&cfg);
+        exit(EXIT_FAILURE);
+    }
+
+    if (!config_lookup_int(&cfg, "idle_in_transaction.timeout",
                            &conf->idle_in_transaction_timeout)) {
-        fprintf(stderr, "No 'idle_in_transaction_timeout' setting in "
+        fprintf(stderr, "Unable to retrieve idle in transaction timeout from "
                         "configuration file.\n");
         config_destroy(&cfg);
         exit(EXIT_FAILURE);
     }
 
-    if (!config_lookup_int(&cfg, "idle_in_transaction_timeout_daemon",
-                           &conf->idle_in_transaction_timeout_daemon)) {
-        fprintf(stderr, "No 'idle_in_transaction_timeout_daemon' setting in "
+    if (!config_lookup_int(&cfg, "idle_in_transaction.daemon",
+                           &conf->idle_in_transaction_daemon)) {
+        fprintf(stderr, "Unable to retrieve idle in transaction daemon from "
                         "configuration file.\n");
         config_destroy(&cfg);
         exit(EXIT_FAILURE);
