@@ -61,6 +61,14 @@ int main(int argc, char *argv[]) {
                 pg->conn, pg->res, conf->idle_in_transaction_timeout)) {
             sleep(conf->idle_in_transaction_timeout_daemon);
         }
+
+        int idle_in_transaction_timeout_daemon_next =
+            conf->idle_in_transaction_timeout + 1;
+
+        if (conf->idle_in_transaction_timeout_daemon >
+            idle_in_transaction_timeout_daemon_next) {
+            sleep(idle_in_transaction_timeout_daemon_next);
+        }
     }
 
     PQfinish(pg->conn);
