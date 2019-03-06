@@ -57,8 +57,9 @@ int main(int argc, char *argv[]) {
     pg_banner();
 
     while (1) {
-        if (!idle_in_transaction_timeout_kill(pg->conn, pg->res)) {
-            sleep(1);
+        if (!idle_in_transaction_timeout_kill(
+                pg->conn, pg->res, conf->idle_in_transaction_timeout)) {
+            sleep(conf->idle_in_transaction_timeout_daemon);
         }
     }
 

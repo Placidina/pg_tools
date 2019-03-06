@@ -54,6 +54,22 @@ pg_config_t *pg_config_read(const char *path) {
         exit(EXIT_FAILURE);
     }
 
+    if (!config_lookup_int(&cfg, "idle_in_transaction_timeout",
+                           &conf->idle_in_transaction_timeout)) {
+        fprintf(stderr, "No 'idle_in_transaction_timeout' setting in "
+                        "configuration file.\n");
+        config_destroy(&cfg);
+        exit(EXIT_FAILURE);
+    }
+
+    if (!config_lookup_int(&cfg, "idle_in_transaction_timeout_daemon",
+                           &conf->idle_in_transaction_timeout_daemon)) {
+        fprintf(stderr, "No 'idle_in_transaction_timeout_daemon' setting in "
+                        "configuration file.\n");
+        config_destroy(&cfg);
+        exit(EXIT_FAILURE);
+    }
+
     return conf;
 }
 
