@@ -24,8 +24,7 @@ pg_config_t *pg_config_read(const char *path) {
     config_init(&cfg);
 
     if (!config_read_file(&cfg, path)) {
-        fprintf(stderr, "%s:%d - %s\n", config_error_file(&cfg),
-                config_error_line(&cfg), config_error_text(&cfg));
+        fprintf(stderr, "%s\n", config_error_text(&cfg));
         config_destroy(&cfg);
         exit(EXIT_FAILURE);
     }
