@@ -46,6 +46,12 @@ int idle_in_transaction_timeout_kill(PGconn *conn, PGresult *res, int timeout) {
             sprintf(query, "select pg_terminate_backend(%d);", pid);
             printf("%s\n", query);
             res = PQexec(conn, query);
+
+            ExecStatusType status = PQresultStatus(res);
+            if (status != PGRES_TUPLES_OK) {
+                pg_log(PG_LOG_WARNING, "%s\n", PQresStatus(status));
+                pg_log(PG_LOG_ERROR, "%s\n", PQerrorMessage(conn));
+            }
         }
 
         PQclear(res);
