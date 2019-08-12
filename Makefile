@@ -47,7 +47,9 @@ clean :
 install:
 	install -m 644 resources/etc/logrotate.d/$(PROJECT) $(DESTDIR)/etc/logrotate.d/
 	mkdir -p $(DESTDIR)/etc/$(PROJECT)/
-	install -m 644 resources/etc/$(PROJECT)/$(PROJECT).conf $(DESTDIR)/etc/$(PROJECT)/
+
+	test -f /etc/$(PROJECT)/$(PROJECT).conf || install -m 644 resources/etc/$(PROJECT)/$(PROJECT).conf $(DESTDIR)/etc/$(PROJECT)/
+
 	install -m 755 $(SERVICE_SRC) $(DESTDIR)/$(SERVICE_DEST)
 	install -m 755 dist/$(PROJECT) $(DESTDIR)/usr/bin/
 	mkdir -p $(DESTDIR)/var/log/$(PROJECT)/
