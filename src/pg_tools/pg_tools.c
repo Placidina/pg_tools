@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
         if (!idle_in_transaction_timeout_kill(
                 pg->conn, pg->res, conf->idle_in_transaction_timeout)) {
             sleep(conf->idle_in_transaction_daemon);
+            continue;
         }
 
         int idle_in_transaction_daemon_next =
