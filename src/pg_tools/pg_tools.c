@@ -23,7 +23,7 @@
 #include "idle_in_transaction_timeout.h"
 
 static pg_connection_t *pg;
-static const char *conf_path = "/etc/pg_tools/pg_tools.conf";
+static const char *conf_path = "/etc/pg-tools.d/pg-tools.conf";
 
 static void pg_banner();
 static void pg_graceful_shutdown();
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 #endif
 
     pg = pg_open_connection(conf->database_host, conf->database_username,
-                            conf->database_password);
+                            conf->database_password, conf->database_name);
     signal(SIGHUP, pg_graceful_shutdown);
 
     pg_banner();

@@ -1,11 +1,10 @@
-# PG Tools configuration file
-
-log="/var/log/pg_tools/pg_tools.log";
+log="/var/log/pg-tools.log";
 
 database = {
     host="127.0.0.1";
     username="postgres";
     password="";
+    name="template1";
 };
 
 idle_in_transaction = {

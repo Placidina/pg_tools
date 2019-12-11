@@ -8,6 +8,7 @@ typedef struct pg_config_t {
     const char *database_host;
     const char *database_username;
     const char *database_password;
+    const char *database_name;
 #ifndef LIBCONFIG_VER_MAJOR
     long int idle_in_transaction_timeout;
     long int idle_in_transaction_daemon;

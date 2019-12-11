@@ -61,6 +61,13 @@ pg_config_t *pg_config_read(const char *path) {
         exit(EXIT_FAILURE);
     }
 
+    if (!config_lookup_string(&cfg, "database.name", &conf->database_name)) {
+        fprintf(stderr,
+                "Unable to retrieve database name from configuration file.\n");
+        config_destroy(&cfg);
+        exit(EXIT_FAILURE);
+    }
+
     if (!config_lookup_int(&cfg, "idle_in_transaction.timeout",
                            &conf->idle_in_transaction_timeout)) {
         fprintf(stderr, "Unable to retrieve idle in transaction timeout from "

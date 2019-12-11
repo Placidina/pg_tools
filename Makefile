@@ -1,12 +1,11 @@
-#
-# By Placidina
-# https://github.com.br/Placidina/pg_tools
-#
+DOCKER_RUN = docker run --rm -v $(shell pwd):/src/github.com/placidina/pg_tools
+CONTAINER = placidina/pg-tools:build
+BUILD_IN_CONTAINER = 1
 
-PROJECT=pg_tools
-BUILD=DEBUG
-VERSION=v1.0.3
-DISTDIR=dist
+PROJECT=pg-tools
+BUILD=RELEASE
+VERSION=v1.1.0
+DISTDIR=build
 OBJDIR=obj
 CC=gcc
 ARCH=-m64
@@ -14,12 +13,8 @@ LDFLAGS=-l pq -l config++
 CPPFLAGS=-Wall
 CFLAGS=-D version=$(VERSION) -D $(BUILD) -std=c11
 
-SRCS=$(shell find . -name '*.c' -not -path 'dist/*' -not -path '.vscode/*' | sed 's/^.\{2\}//')
-INC=$(shell find . -name '*.h' -not -path 'dist/*' -not -path 'obj/*' -not -path '.vscode/*' -printf '-I %h/\n' | sed 's/\.\///g')
-
-SERVICE_SRC := $(shell pidof systemd > /dev/null && echo "resources/lib/systemd/system/pg_tools.service" || echo "resources/etc/init.d/pg_tools")
-SERVICE_DEST := $(shell pidof systemd > /dev/null && echo "lib/systemd/system/" || echo "etc/init.d/")
-REMOVE_SERVICE := $(shell pidof systemd > /dev/null && echo "systemctl stop pg_tools.service && systemctl disable pg_tools.service && rm -rf /lib/systemd/system/pg_tools.service" || echo "/etc/init.d/pg_tools stop && rm -rf /etc/init.d/pg_tools")
+SRCS=$(shell find . -name '*.c' -not -path 'build/*' -not -path '.vscode/*' | sed 's/^.\{2\}//')
+INC=$(shell find . -name '*.h' -not -path 'build/*' -not -path 'obj/*' -not -path '.vscode/*' -printf '-I %h/\n' | sed 's/\.\///g')
 
 OBJS=$(patsubst %.c,${OBJDIR}/%.o,${SRCS})
 DEPS=$(patsubst %.c,${OBJDIR}/%.d,${SRCS})
@@ -28,7 +23,11 @@ all: $(DISTDIR)/$(PROJECT)
 
 $(DISTDIR)/$(PROJECT): $(OBJS)
 	mkdir -p $(@D)
+ifeq ($(BUILD_IN_CONTAINER),1)
+	$(DOCKER_RUN) $(CONTAINER) $(CC) $(ARCH) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS) $(INC) $^ -o $(DISTDIR)/$(PROJECT)
+else
 	$(CC) $(ARCH) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS) $(INC) $^ -o $(DISTDIR)/$(PROJECT)
+endif
 
 .SECONDEXPANSION:
 
@@ -39,28 +38,6 @@ ${OBJDIR}/%.d : ;
 
 ${OBJDIR}/% :
 	mkdir -p $@
-
-clean :
-	rm -rf ${OBJDIR}
-	rm -rf ${DISTDIR}/${PROJECT}
-
-install:
-	install -m 644 resources/etc/logrotate.d/$(PROJECT) $(DESTDIR)/etc/logrotate.d/
-	mkdir -p $(DESTDIR)/etc/$(PROJECT)/
-
-	test -f /etc/$(PROJECT)/$(PROJECT).conf || install -m 644 resources/etc/$(PROJECT)/$(PROJECT).conf $(DESTDIR)/etc/$(PROJECT)/
-
-	install -m 755 $(SERVICE_SRC) $(DESTDIR)/$(SERVICE_DEST)
-	install -m 755 dist/$(PROJECT) $(DESTDIR)/usr/bin/
-	mkdir -p $(DESTDIR)/var/log/$(PROJECT)/
-	touch $(DESTDIR)/var/log/$(PROJECT)/$(PROJECT).log
-
-uninstall:
-	rm -rf /etc/logrotate.d/$(PROJECT)
-	rm -rf /etc/$(PROJECT)/
-	$(REMOVE_SERVICE)
-	rm -rf /usr/bin/$(PROJECT)
-	rm -rf /var/run/$(PROJECT)/
 
 .PHONY: all clean install uninstall
 
