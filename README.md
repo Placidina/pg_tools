@@ -47,6 +47,5 @@ docker run --rm --name pg -e PG_HOST=example.com -e PG_PASSWORD=12345 -d placidi
 | `PG_USER` | Database user name (default: "postgres") |
 | `PG_PASSWORD` | User password |
 | `PG_DATABASE` | Database name to connect (default: "template1") |
-
 | `PG_TIMEOUT` | Seconds to kill connection "state_change" (default: "10" |
 | `PG_DAEMON` | Seconds to next execute (default: "30") |
