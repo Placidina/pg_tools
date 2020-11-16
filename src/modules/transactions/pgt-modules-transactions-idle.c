@@ -38,9 +38,7 @@ pgt_modules_transactions_idle_timeout_kill(pgt_modules_transactions_idle_t *idle
             "xact_start;",
             idle->config->timeout);
 
-#ifdef PGT_DEBUG
     pgt_log_debug("(modules:transactions:idle) query: %s", query);
-#endif
 
     res = PQexec(idle->conn, query);
     switch (PQresultStatus(res)) {
@@ -53,26 +51,19 @@ pgt_modules_transactions_idle_timeout_kill(pgt_modules_transactions_idle_t *idle
         case PGRES_TUPLES_OK: {
             rows = PQntuples(res);
 
-#ifdef PGT_DEBUG
             pgt_log_debug("(modules:transactions:idle) total: %d", rows);
-#endif
 
             for (int i = 0; i < rows; i++) {
                 pid = atoi(PQgetvalue(res, i, 0));
 
                 if (!idle->config->session && pgt_strncmp(MODULES_TRANSACTIONS_IDLE_SESSIN_SKIP, PQgetvalue(res, i, 5), 11) == 0) {
-#ifdef PGT_DEBUG
                     pgt_log_debug("(modules:transactions:idle) skiped transaction session pid=\"%d\": %s", pid, PQgetvalue(res, i, 5));
-#endif
                     continue;
                 }
 
                 pgt_log_error(PGT_LOG_INFO, 0, "pid=\"%d\" datname=\"%s\" application_name=\"%s\" xact_start=\"%s\" state_change=\"%s\": %s", pid, PQgetvalue(res, i, 1), PQgetvalue(res, i, 2), PQgetvalue(res, i, 3), PQgetvalue(res, i, 4), PQgetvalue(res, i, 5));
                 sprintf(query, "SELECT pg_terminate_backend(%d);", pid);
-
-#ifdef PGT_DEBUG
                 pgt_log_debug("(modules:transactions:idle) query: %s", query);
-#endif
 
                 (void)PQexec(idle->conn, query);
 
@@ -82,9 +73,7 @@ pgt_modules_transactions_idle_timeout_kill(pgt_modules_transactions_idle_t *idle
             PQclear(res);
 
             if (again == 1) {
-#ifdef PGT_DEBUG
                 pgt_log_debug("(modules:transactions:idle) AGAIN requested");
-#endif
                 return PGT_AGAIN;
             }
 
