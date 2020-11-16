@@ -44,6 +44,8 @@ pgt_modules_cycle()
             break;
         }
 
+        pgt_time_update();
+
         if (pgt_modules->transactions->idle->config->enabled) {
             if (pgt_modules_transactions_idle_timeout_kill(pgt_modules->transactions->idle) == PGT_AGAIN) {
                 continue;

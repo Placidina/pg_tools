@@ -44,7 +44,7 @@ The following table lists the configurable parameters of the pgtools chart and t
 Parameter | Description | Default
 ---|---|---
 `image.repository` | Repository for container image | `placidina/pg-tools`
-`image.tag` | Image tag | `2.0.1`
+`image.tag` | Image tag | `2.0.2`
 `image.pullPolicy` | Image pull policy | `IfNotPresent`
 `image.pullSecrets` | Image pull secrets | `[]`
 `replicaCount` | Number of replicas | `1`
