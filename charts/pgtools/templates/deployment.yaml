@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "pgtools.fullname" . }}
+  labels:
+    app: {{ template "pgtools.name" . }}
+    chart: {{ template "pgtools.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- if .Values.deploymentLabels }}
+{{ toYaml .Values.deploymentLabels | indent 4 }}
+    {{- end }}
+  annotations:
+{{ toYaml .Values.deploymentAnnotations | indent 4}}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+{{ toYaml .Values.deploymentStrategy | indent 4 }}
+  selector:
+    matchLabels:
+      app: {{ template "pgtools.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pgtools.name" . }}
+        release: {{ .Release.Name }}
+        {{- if .Values.podLabels }}
+{{ toYaml .Values.podLabels | indent 8 }}
+        {{- end }}
+      {{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ template "pgtools.serviceAccountName" . }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 6 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+      {{- end }}
+{{- with .Values.priorityClassName }}
+      priorityClassName: "{{ . }}"
+{{- end }}
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.image.pullSecrets | indent 6 }}
+      {{- end }}
+      {{- if .Values.extraInitContainers }}
+      initContainers:
+{{ toYaml .Values.extraInitContainers | indent 6}}
+      {{- end }}
+      containers:
+      - name: "{{ template "pgtools.name" . }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        {{- if .Values.commandOverrides }}
+        command: {{ .Values.commandOverrides }}
+        {{- end }}
+        {{- if .Values.resources }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        {{- end }}
+        {{- if .Values.extraEnvs }}
+        env:
+{{ toYaml .Values.extraEnvs | indent 8 }}
+        {{- end }}
+        {{- if .Values.lifecycle }}
+        lifecycle:
+{{ toYaml .Values.lifecycle | indent 10 }}
+        {{- end }}
+        {{- if .Values.readinessProbe }}
+        readinessProbe:
+{{ toYaml .Values.readinessProbe | indent 10 }}
+        {{- end }}
+        {{- if .Values.livenessProbe }}
+        livenessProbe:
+{{ toYaml .Values.livenessProbe | indent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: config
+          mountPath: /etc/pgtools
+        {{- if .Values.extraVolumeMounts }}
+{{ toYaml .Values.extraVolumeMounts | indent 8 }}
+        {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "pgtools.fullname" . }}
+      {{- if .Values.extraVolumes }}
+{{ toYaml .Values.extraVolumes | indent 6 }}
+      {{- end }}

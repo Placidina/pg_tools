@@ -1,16 +1,52 @@
 # vim:set ft=dockerfile:
-FROM centos:7
+FROM alpine:3.12
 
-LABEL maintainer="Alan Placidina Maria <alanplacidina@gmail.com>"
+LABEL maintainer="Alan Placidina Maria <placidina@protonmail.com>"
+LABEL autor="Alan Placidina Maria <placidina@protonmail.com>"
 
-RUN yum update -y \
-    && yum install -y libconfig postgresql-libs
+ENV LANG pt_BR.utf8
+ENV TZ=America/Sao_Paulo
 
-RUN ln -sf /dev/stdout /var/log/pg-tools.log
+RUN set -eux; \
+    mkdir /etc/pgtools \
+    && mkdir /tmp/pgtools
 
-COPY pg-tools.conf.example /etc/pg-tools.d/pg-tools.conf
-COPY build/pg-tools /usr/bin/pg-tools
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN set -eux; \
+    adduser --home /home/pgtools --shell /bin/ash --disabled-password -G users pgtools
 
-ENTRYPOINT [ "/docker-entrypoint.sh" ]
-CMD [ "pg-tools" ]
+RUN set -eux; \
+    apk add --no-cache \
+    libconfig \
+    libpq \
+    postgresql-libs \
+    tzdata \
+    && apk add --no-cache --virtual .build-deps \
+    gcc \
+    cmake \
+    libconfig-dev \
+    postgresql-dev \
+    make \
+    libc-dev \
+    linux-headers \
+    git
+
+ADD . /tmp/pgtools/
+
+RUN set -eux; \
+    cd /tmp/pgtools \
+    && mkdir build \
+    && cd build/ \
+    && cmake ../ \
+    && make \
+    && make install
+
+RUN set -eux; \
+    apk del .build-deps \
+    && rm -rf /tmp/*
+
+COPY pgtools.conf.example /etc/pgtools/pgtools.conf
+
+STOPSIGNAL SIGTERM
+
+USER pgtools
+CMD [ "pgtools" ]

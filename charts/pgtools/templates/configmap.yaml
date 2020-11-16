@@ -1,0 +1,33 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "pgtools.fullname" . }}
+  labels:
+    app: {{ template "pgtools.name" . }}
+    chart: {{ template "pgtools.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{- if .Values.config }}
+  pgtools.conf: {{ toYaml .Values.config | nindent 4 }}
+  {{- else }}
+  pgtools.conf: |
+    database = {
+        host="127.0.0.1";
+        username="postgres";
+        password="123";
+        name="template1";
+    };
+
+    modules = {
+        cycle = 30;
+        transactions = {
+            idle = {
+                enabled = true;
+                timeout = 60;
+                session = false;
+            };
+        };
+    };
+  {{- end }}

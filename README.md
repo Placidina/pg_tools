@@ -1,12 +1,15 @@
 # PG Tools
 
-Simple tool to solve the problem of `idle in transactions` from PostgreSQL 9.4
+Simple tool to solve problems for PostgreSQL
 
 ## Requeriments
 
 * `postgresql-libs`
 * `libconfig`
 * `gcc`
+* `cmake`
+* `make`
+* `linux-headers`
 
 ## Build
 
@@ -17,35 +20,44 @@ To build in locally:
 ```sh
 git clone https://github.com/Placidina/pg_tools.git
 cd pg_tools
-make BUILD_IN_CONTAINER=0
+mkdir build/
+cd build/
+cmake ../
+make
 ```
 
 ## Usage Locally
 
 ```sh
-PG Tools v1.0.0
+pgtools version: b66de8cdff390d7883b91113e2d5c957cfb1a72e
+Usage: pgt [-?hvudc] 
 
-Usage:
-	-h	Show this.
-	-c	Configuration file.
-			Default: /etc/pg-tools.d/pg-tools.conf
-
-Report bug: <alanplacidina@gmail.com>
+Options:
+  -?,-h               : this help
+  -v                  : show version and exit
+  -c                  : set configuration file
 ```
 
-## Usage in Container
+## Available Modules
+
+| Name | Description |
+|---|---|
+| `transactions/idle` | Kill connections in `idle in transactions` |
+
+### Module Transaction Idle Configurations
+
+| Name | Type | Description |
+|---|---|---|
+| `enabled` | Bool | Enable or disable `Idle` module |
+| `timeout` | Int | Interval entry `NOW() - state_change` to kill transaction |
+| `session` | Bool | Enable or disable to kill query `SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;` |
 
 ```sh
-docker run --rm --name pg -e PG_HOST=example.com -e PG_PASSWORD=12345 -d placidina/pg-tools:latest
+...
+idle = {
+	enabled = true;
+	timeout = 60;
+	session = false;
+};
+...
 ```
-
-## Available Container Environments
-
-| Env | Description |
-|---|---|
-| `PG_HOST` | Database server host or socket directory |
-| `PG_USER` | Database user name (default: "postgres") |
-| `PG_PASSWORD` | User password |
-| `PG_DATABASE` | Database name to connect (default: "template1") |
-| `PG_TIMEOUT` | Seconds to kill connection "state_change" (default: "10" |
-| `PG_DAEMON` | Seconds to next execute (default: "30") |
