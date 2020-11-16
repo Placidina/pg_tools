@@ -1,7 +1,0 @@
-{
-    "C_Cpp.clang_format_fallbackStyle": "LLVM",
-    "C_Cpp.clang_format_path": "/usr/bin/clang-format",
-    "C_Cpp.clang_format_sortIncludes": false,
-    "editor.formatOnType": true,
-    "C_Cpp.default.intelliSenseMode": "gcc-x64"
-}

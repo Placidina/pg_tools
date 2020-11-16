@@ -1,0 +1,23 @@
+apiVersion: v1
+entries:
+  pgtools:
+  - apiVersion: v1
+    appVersion: 2.0.1
+    created: "2020-11-16T16:48:43.515193529-03:00"
+    description: Simple tool to solve the problems for PostgreSQL
+    digest: da5c6aecb601ec9d3c973c27e1dc41ea4073db1d3c953e8253616f824fc390ed
+    home: https://github.com/Placidina/pg_tools
+    keywords:
+    - pgtools
+    - postgres
+    kubeVersion: ^1.16.0-0
+    maintainers:
+    - email: placidina@protonmail.com
+      name: Alan Placidina Maria
+    name: pgtools
+    sources:
+    - https://github.com/Placidina/pg_tools
+    urls:
+    - pgtools-1.0.0.tgz
+    version: 1.0.0
+generated: "2020-11-16T16:48:43.514205962-03:00"
